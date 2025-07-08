@@ -1,5 +1,7 @@
 const Leave = require('../models/leave');
 
+
+
 const getAllLeaves = async (req,res) =>{
     try{
         const allLeaves = await Leave.find({});
@@ -57,6 +59,7 @@ const deleteLeave = async (req,res) =>{
         return res.status(500).json({error: error.message});
     }   
 }
+
 
 module.exports = {
     getAllLeaves,createLeave,

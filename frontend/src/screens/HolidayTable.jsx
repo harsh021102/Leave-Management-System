@@ -14,6 +14,7 @@ import {
 	Typography,
 	Box,
 } from "@mui/material";
+import AddHoliday from "../components/AddHoliday";
 
 const holidayData = {
 	2023: [
@@ -51,7 +52,7 @@ const HolidayTable = () => {
 			<Typography variant="h5" gutterBottom>
 				Holiday List - {selectedYear}
 			</Typography>
-
+			<AddHoliday />
 			<FormControl sx={{ minWidth: 120, marginBottom: 2 }}>
 				<InputLabel id="year-select-label">Year</InputLabel>
 				<Select

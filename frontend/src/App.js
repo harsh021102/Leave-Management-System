@@ -24,6 +24,7 @@ function App() {
         <LeftNav />
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          {/* <Route path="/" element={<TestForm />} /> */}
           <Route path="/holidays" element={<HolidayTable />} />
           <Route path="/approvals" element={<Approvals />} />
         {/* <Dashboard /> */}

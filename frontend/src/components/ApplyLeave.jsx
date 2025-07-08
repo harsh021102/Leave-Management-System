@@ -60,28 +60,56 @@ const LeaveDrawerForm = () => {
 						reason: "",
 					}}
 					validationSchema={validationSchema}
-					onSubmit={async (values, { resetForm }) => {
-						const start = new Date(values.startDate);
-						const end = new Date(values.endDate);
-						const numOfDays =
-							Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
-						console.log("Data", values);
-						try {
-							const response = await axios.post(
-								"http://localhost:5000/api/v1/leaves",
-								{
-									...values,
-									numOfDays,
-								}
-							);
-							console.log("Leave created:", response.data);
-							resetForm();
-							alert("Leave request submitted successfully");
-						} catch (error) {
-							console.error("Error submitting leave request:", error);
-							alert("Failed to submit leave request");
+					onSubmit={
+						// (values) => {
+						// 	alert("MY custom onSubmit triggered!");
+						// 	console.log("My form values:", values);
+						// }
+						async (values, { resetForm }) => {
+							const start = new Date(values.startDate);
+							const end = new Date(values.endDate);
+							const numOfDays =
+								Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+							console.log("Data", values);
+							console.log("Sending to backend:", {
+								...values,
+								numOfDays,
+							});
+							try {
+								const res = await axios.post(
+									"http://localhost:5000/api/v1/leaves",
+									{
+										startDate: "2025-07-11",
+										endDate: "2025-07-12",
+										leaveType: "Annual Leave",
+										reason: "Test reason",
+										numOfDays: 2,
+									}
+								);
+								console.log("✅ Success:", res.data);
+							} catch (err) {
+								console.error(
+									"❌ Axios failed:",
+									err.response?.data || err.message
+								);
+							}
+							// try {
+							// 	const response = await axios.post(
+							// 		"http://localhost:5000/api/v1/leaves",
+							// 		{
+							// 			...values,
+							// 			numOfDays,
+							// 		}
+							// 	);
+							// 	console.log("Leave created:", response.data);
+							// 	resetForm();
+							// 	alert("Leave request submitted successfully");
+							// } catch (error) {
+							// 	console.error("Error submitting leave request:", error);
+							// 	alert("Failed to submit leave request");
+							// }
 						}
-					}}
+					}
 				>
 					{({ values, errors, touched, handleChange }) => {
 						const selectedLeave = leaveTypes.find(
@@ -183,6 +211,9 @@ const LeaveDrawerForm = () => {
 								>
 									Submit
 								</Button>
+								{/* <Button type="submit" variant="contained" color="primary">
+									Submit
+								</Button> */}
 							</Form>
 						);
 					}}

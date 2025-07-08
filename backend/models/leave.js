@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 
 const leaveSchema = new mongoose.Schema({
-    // leaveId: {
-    //     type: String,
-    //     required: true,
-    //     unique: true
-    // },
+    leaveId: {
+        type: String,
+        required: true,
+        unique: true,
+        default: function () {
+    return `L-${Date.now()}`;
+  },
+    },
     // name: String
     startDate:  {
         type: Date,
@@ -17,7 +20,7 @@ const leaveSchema = new mongoose.Schema({
     },
     leaveType: {
         type: String,
-        enum: ['sick', 'annual', 'casual'],
+        enum: ["Sick Leave", "Casual Leave", "Annual Leave"],
         required: true
     },
     numOfDays: {

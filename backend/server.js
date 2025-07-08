@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 require("./db/connect");
 const cors = require("cors");
 const leaves = require("./routes/leaves");
+const holidays = require("./routes/holidays");
 const app = express();
 const connectDB = require("./db/connect");
 require("dotenv").config();
@@ -13,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/v1/leaves', leaves);
+app.use('/api/v1/holidays', holidays);
 
 const start = async () => {
   try {
