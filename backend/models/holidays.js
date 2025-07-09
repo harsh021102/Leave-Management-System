@@ -6,8 +6,8 @@ const holidaySchema = new mongoose.Schema({
         required: true,
         unique: true,
         default: function () {
-    return `L-${Date.now()}`;
-  },
+            return `L-${Date.now()}`;
+        },
     },
     // name: String
     holidayDate:  {

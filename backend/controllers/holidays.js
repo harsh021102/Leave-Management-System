@@ -8,6 +8,16 @@ const getAllHolidays = async (req,res) =>{
         return res.status(500).json({error: error.message});
     }
 }
+const createHoliday = async (req,res) =>{
+    try{
+        const holiday = await Holiday.create(req.body);
+        res.status(201).json({holiday});
+    }
+    catch(error){
+        return res.status(500).json({error: error.message});
+    }
+    
+}
 module.exports = {
-    getAllHolidays
+    getAllHolidays,createHoliday
 }    

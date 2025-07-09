@@ -60,7 +60,6 @@ const deleteLeave = async (req,res) =>{
     }   
 }
 
-
 module.exports = {
     getAllLeaves,createLeave,
     updateLeave,deleteLeave,getLeave

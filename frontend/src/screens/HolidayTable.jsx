@@ -15,31 +15,49 @@ import {
 	Box,
 } from "@mui/material";
 import AddHoliday from "../components/AddHoliday";
+import { useEffect } from "react";
+import axios from "axios";
+// require("dotenv").config();
+// const holidayData = {
+// 	2023: [
+// 		{ name: "New Year", date: "2023-01-01", type: "Public Holiday" },
+// 		{ name: "Diwali", date: "2023-11-12", type: "Festival" },
+// 	],
+// 	2024: [
+// 		{ name: "Republic Day", date: "2024-01-26", type: "Public Holiday" },
+// 		{ name: "Holi", date: "2024-03-25", type: "Festival" },
+// 	],
+// 	2025: Array(15).fill({
+// 		name: "Christmas",
+// 		date: "2025-12-25",
+// 		type: "Festival",
+// 	}),
+// };
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: 11 }, (_, i) =>
+	(currentYear - 5 + i).toString()
+);
 
-const holidayData = {
-	2023: [
-		{ name: "New Year", date: "2023-01-01", type: "Public Holiday" },
-		{ name: "Diwali", date: "2023-11-12", type: "Festival" },
-	],
-	2024: [
-		{ name: "Republic Day", date: "2024-01-26", type: "Public Holiday" },
-		{ name: "Holi", date: "2024-03-25", type: "Festival" },
-	],
-	2025: Array(15).fill({
-		name: "Christmas",
-		date: "2025-12-25",
-		type: "Festival",
-	}),
-};
-
+const BASE_API = process.env.BASE_URL || "http://localhost:5000/api/v1";
 const HolidayTable = () => {
-	const currentYear = new Date().getFullYear();
-	const [selectedYear, setSelectedYear] = useState(currentYear);
-
+	const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+	const [holidayData, setHolidayData] = useState({});
 	const handleYearChange = (event) => {
 		setSelectedYear(event.target.value);
 	};
-
+	const fetchHolidayData = async () => {
+		try {
+			const response = await axios.get(`${BASE_API}/holidays`);
+			const data = response.data.allHolidays; // ✅ Get actual data
+			setHolidayData(data);
+			console.log("Holiday Data:", data);
+		} catch (error) {
+			console.error("Error fetching holiday data:", error);
+		}
+	};
+	useEffect(() => {
+		fetchHolidayData();
+	}, []);
 	return (
 		<Box
 			style={{
@@ -52,24 +70,35 @@ const HolidayTable = () => {
 			<Typography variant="h5" gutterBottom>
 				Holiday List - {selectedYear}
 			</Typography>
-			<AddHoliday />
-			<FormControl sx={{ minWidth: 120, marginBottom: 2 }}>
-				<InputLabel id="year-select-label">Year</InputLabel>
-				<Select
-					labelId="year-select-label"
-					id="year-select"
-					value={selectedYear}
-					label="Year"
-					onChange={handleYearChange}
-				>
-					{Object.keys(holidayData).map((year) => (
-						<MenuItem key={year} value={parseInt(year)}>
-							{year}
-						</MenuItem>
-					))}
-				</Select>
-			</FormControl>
-
+			<Box
+				sx={{
+					display: "flex",
+					justifyContent: "flex-end",
+					marginBottom: 2,
+					height: "50px",
+					gap: 2,
+					// backgroundColor: "blue",
+				}}
+			>
+				<AddHoliday />
+				<FormControl sx={{ minWidth: 120 }}>
+					<InputLabel id="year-select-label">Year</InputLabel>
+					<Select
+						labelId="year-select-label"
+						id="year-select"
+						value={selectedYear}
+						label="Year"
+						onChange={handleYearChange}
+						sx={{ height: "100%" }}
+					>
+						{years.map((year) => (
+							<MenuItem key={year} value={year}>
+								{year}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			</Box>
 			<TableContainer
 				component={Paper}
 				sx={{
@@ -100,24 +129,15 @@ const HolidayTable = () => {
 							>
 								<strong>Date</strong>
 							</TableCell>
-							<TableCell
-								sx={{
-									backgroundColor: "#f5f5f5",
-									position: "sticky",
-									top: 0,
-									zIndex: 1,
-								}}
-							>
-								<strong>Holiday Type</strong>
-							</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{(holidayData[selectedYear] || []).map((holiday, index) => (
+						{holidayData.map((holiday, index) => (
 							<TableRow key={index}>
-								<TableCell>{holiday.name}</TableCell>
-								<TableCell>{holiday.date}</TableCell>
-								<TableCell>{holiday.type}</TableCell>
+								<TableCell>{holiday.holidayName}</TableCell>
+								<TableCell>
+									{new Date(holiday.holidayDate).toLocaleDateString("en-IN")}
+								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

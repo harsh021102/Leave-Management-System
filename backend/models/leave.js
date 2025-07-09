@@ -31,7 +31,7 @@ const leaveSchema = new mongoose.Schema({
     reason: {
         type: String,
         required: true,
-        minlength: 10
+        minlength: 1
     },
 });
 
