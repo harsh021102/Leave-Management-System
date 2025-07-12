@@ -1,14 +1,6 @@
 const mongoose = require('mongoose');
 
 const leaveSchema = new mongoose.Schema({
-    leaveId: {
-        type: String,
-        required: true,
-        unique: true,
-        default: function () {
-    return `L-${Date.now()}`;
-  },
-    },
     // name: String
     startDate:  {
         type: Date,

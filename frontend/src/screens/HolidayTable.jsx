@@ -13,10 +13,15 @@ import {
 	InputLabel,
 	Typography,
 	Box,
+	IconButton,
+	Button,
 } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
 import AddHoliday from "../components/AddHoliday";
 import { useEffect } from "react";
 import axios from "axios";
+import HolidayDataUpdate from "../components/AddHoliday";
+import EditHoliday from "../components/EditHoliday";
 // require("dotenv").config();
 // const holidayData = {
 // 	2023: [
@@ -41,9 +46,20 @@ const years = Array.from({ length: 11 }, (_, i) =>
 const BASE_API = process.env.BASE_URL || "http://localhost:5000/api/v1";
 const HolidayTable = () => {
 	const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-	const [holidayData, setHolidayData] = useState({});
+	const [holidayData, setHolidayData] = useState([]);
+	const [holidayID, setHolidayID] = useState("");
+	const [isEditMode, setIsEditMode] = useState(false);
+	const [reload, setReload] = useState(false);
+	const [open, setOpen] = React.useState(false);
 	const handleYearChange = (event) => {
 		setSelectedYear(event.target.value);
+	};
+	const handleClickOpen = () => {
+		setOpen(true);
+	};
+
+	const handleClose = () => {
+		setOpen(false);
 	};
 	const fetchHolidayData = async () => {
 		try {
@@ -57,7 +73,8 @@ const HolidayTable = () => {
 	};
 	useEffect(() => {
 		fetchHolidayData();
-	}, []);
+		// setReload(false);
+	}, [reload]);
 	return (
 		<Box
 			style={{
@@ -80,7 +97,37 @@ const HolidayTable = () => {
 					// backgroundColor: "blue",
 				}}
 			>
-				<AddHoliday />
+				{/* {isEditMode ? (
+					<AddHoliday setReload={setReload} />
+				) : (
+					<EditHoliday holidayID={holidayID} setReload={setReload} />
+				)} */}
+				<Button
+					variant="contained"
+					onClick={() => {
+						handleClickOpen();
+						setHolidayID(null);
+					}}
+					sx={{ height: "100%" }}
+				>
+					Add Holiday
+				</Button>
+				{isEditMode ? (
+					<AddHoliday
+						holidayID={holidayID}
+						setReload={setReload}
+						handleClose={handleClose}
+						open={open}
+					/>
+				) : (
+					<AddHoliday
+						holidayID={holidayID}
+						setReload={setReload}
+						handleClose={handleClose}
+						open={open}
+					/>
+				)}
+
 				<FormControl sx={{ minWidth: 120 }}>
 					<InputLabel id="year-select-label">Year</InputLabel>
 					<Select
@@ -129,14 +176,49 @@ const HolidayTable = () => {
 							>
 								<strong>Date</strong>
 							</TableCell>
+							<TableCell
+								sx={{
+									backgroundColor: "#f5f5f5",
+									position: "sticky",
+									top: 0,
+									zIndex: 1,
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+								}}
+							>
+								<strong>Actions</strong>
+							</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{holidayData.map((holiday, index) => (
+						{holidayData?.map((holiday, index) => (
 							<TableRow key={index}>
 								<TableCell>{holiday.holidayName}</TableCell>
 								<TableCell>
 									{new Date(holiday.holidayDate).toLocaleDateString("en-IN")}
+								</TableCell>
+								<TableCell>
+									<Box
+										sx={{
+											display: "flex",
+											justifyContent: "center",
+											alignItems: "center",
+											// backgroundColor: "pink",
+										}}
+									>
+										<IconButton
+											sx={{ padding: 0 }}
+											onClick={() => {
+												setHolidayID(holiday._id);
+												handleClickOpen();
+												setIsEditMode(true);
+												// console.log("Holiday ID:", holiday._id);
+											}}
+										>
+											<EditIcon color="primary" />
+										</IconButton>
+									</Box>
 								</TableCell>
 							</TableRow>
 						))}
