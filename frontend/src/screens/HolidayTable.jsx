@@ -22,6 +22,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import HolidayDataUpdate from "../components/AddHoliday";
 import EditHoliday from "../components/EditHoliday";
+import CustomAlert from "../components/CustomAlert";
 // require("dotenv").config();
 // const holidayData = {
 // 	2023: [
@@ -46,11 +47,14 @@ const years = Array.from({ length: 11 }, (_, i) =>
 const BASE_API = process.env.BASE_URL || "http://localhost:5000/api/v1";
 const HolidayTable = () => {
 	const [selectedYear, setSelectedYear] = useState(currentYear.toString());
-	const [holidayData, setHolidayData] = useState([]);
+	const [allHolidayData, setAllHolidayData] = useState([]);
+	const [selectedHolidayData, setSelectedHolidayData] = useState(null);
 	const [holidayID, setHolidayID] = useState("");
 	const [isEditMode, setIsEditMode] = useState(false);
 	const [reload, setReload] = useState(false);
 	const [open, setOpen] = React.useState(false);
+	const [alertOpen, setAlertOpen] = useState(false);
+	const [alertStatus, setAlertStatus] = useState(null);
 	const handleYearChange = (event) => {
 		setSelectedYear(event.target.value);
 	};
@@ -61,171 +65,183 @@ const HolidayTable = () => {
 	const handleClose = () => {
 		setOpen(false);
 	};
-	const fetchHolidayData = async () => {
+
+	const fetchAllHolidayData = async () => {
 		try {
 			const response = await axios.get(`${BASE_API}/holidays`);
 			const data = response.data.allHolidays; // ✅ Get actual data
-			setHolidayData(data);
-			console.log("Holiday Data:", data);
+			const sorted = data.sort(
+				(a, b) => new Date(a.holidayDate) - new Date(b.holidayDate)
+			);
+
+			setAllHolidayData(sorted);
 		} catch (error) {
 			console.error("Error fetching holiday data:", error);
 		}
 	};
 	useEffect(() => {
-		fetchHolidayData();
-		// setReload(false);
+		fetchAllHolidayData();
 	}, [reload]);
 	return (
-		<Box
-			style={{
-				padding: 20,
-				width: "98.5%",
-				height: "100%",
-				backgroundColor: "background.white",
-			}}
-		>
-			<Typography variant="h5" gutterBottom>
-				Holiday List - {selectedYear}
-			</Typography>
+		<>
+			{alertOpen && (
+				<CustomAlert
+					status={alertStatus}
+					alertOpen={alertOpen}
+					setAlertOpen={setAlertOpen}
+				/>
+			)}
 			<Box
-				sx={{
-					display: "flex",
-					justifyContent: "flex-end",
-					marginBottom: 2,
-					height: "50px",
-					gap: 2,
-					// backgroundColor: "blue",
+				style={{
+					padding: 20,
+					width: "98.5%",
+					height: "100%",
+					backgroundColor: "background.white",
 				}}
 			>
-				{/* {isEditMode ? (
-					<AddHoliday setReload={setReload} />
-				) : (
-					<EditHoliday holidayID={holidayID} setReload={setReload} />
-				)} */}
-				<Button
-					variant="contained"
-					onClick={() => {
-						handleClickOpen();
-						setHolidayID(null);
+				{/* <CustomAlert status={open} /> */}
+				<Typography variant="h5" gutterBottom>
+					Holiday List - {selectedYear}
+				</Typography>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "flex-end",
+						marginBottom: 2,
+						height: "50px",
+						gap: 2,
 					}}
-					sx={{ height: "100%" }}
 				>
-					Add Holiday
-				</Button>
-				{isEditMode ? (
-					<AddHoliday
-						holidayID={holidayID}
-						setReload={setReload}
-						handleClose={handleClose}
-						open={open}
-					/>
-				) : (
-					<AddHoliday
-						holidayID={holidayID}
-						setReload={setReload}
-						handleClose={handleClose}
-						open={open}
-					/>
-				)}
-
-				<FormControl sx={{ minWidth: 120 }}>
-					<InputLabel id="year-select-label">Year</InputLabel>
-					<Select
-						labelId="year-select-label"
-						id="year-select"
-						value={selectedYear}
-						label="Year"
-						onChange={handleYearChange}
+					<Button
+						variant="contained"
+						onClick={() => {
+							handleClickOpen();
+							setHolidayID(null);
+							setSelectedHolidayData({});
+						}}
 						sx={{ height: "100%" }}
 					>
-						{years.map((year) => (
-							<MenuItem key={year} value={year}>
-								{year}
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-			</Box>
-			<TableContainer
-				component={Paper}
-				sx={{
-					height: "calc(100vh - 220px)", // Adjust 200px based on your header/dropdown height
-					overflowY: "auto",
-				}}
-			>
-				<Table stickyHeader>
-					<TableHead>
-						<TableRow>
-							<TableCell
-								sx={{
-									backgroundColor: "#f5f5f5",
-									position: "sticky",
-									top: 0,
-									zIndex: 1,
-								}}
-							>
-								<strong>Holiday Name</strong>
-							</TableCell>
-							<TableCell
-								sx={{
-									backgroundColor: "#f5f5f5",
-									position: "sticky",
-									top: 0,
-									zIndex: 1,
-								}}
-							>
-								<strong>Date</strong>
-							</TableCell>
-							<TableCell
-								sx={{
-									backgroundColor: "#f5f5f5",
-									position: "sticky",
-									top: 0,
-									zIndex: 1,
-									display: "flex",
-									justifyContent: "center",
-									alignItems: "center",
-								}}
-							>
-								<strong>Actions</strong>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{holidayData?.map((holiday, index) => (
-							<TableRow key={index}>
-								<TableCell>{holiday.holidayName}</TableCell>
-								<TableCell>
-									{new Date(holiday.holidayDate).toLocaleDateString("en-IN")}
+						Add Holiday
+					</Button>
+					{isEditMode ? (
+						<AddHoliday
+							selectedHolidayData={selectedHolidayData}
+							holidayID={holidayID}
+							setReload={setReload}
+							handleClose={handleClose}
+							open={open}
+							setAlertOpen={setAlertOpen}
+							setAlertStatus={setAlertStatus}
+						/>
+					) : (
+						<AddHoliday
+							holidayID={holidayID}
+							setReload={setReload}
+							handleClose={handleClose}
+							open={open}
+							setAlertOpen={setAlertOpen}
+							setAlertStatus={setAlertStatus}
+						/>
+					)}
+
+					<FormControl sx={{ minWidth: 120 }}>
+						<InputLabel id="year-select-label">Year</InputLabel>
+						<Select
+							labelId="year-select-label"
+							id="year-select"
+							value={selectedYear}
+							label="Year"
+							onChange={handleYearChange}
+							sx={{ height: "100%" }}
+						>
+							{years.map((year) => (
+								<MenuItem key={year} value={year}>
+									{year}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</Box>
+				<TableContainer
+					component={Paper}
+					sx={{
+						height: "calc(100vh - 220px)",
+						overflowY: "auto",
+					}}
+				>
+					<Table stickyHeader>
+						<TableHead>
+							<TableRow>
+								<TableCell
+									sx={{
+										backgroundColor: "#f5f5f5",
+										position: "sticky",
+										top: 0,
+										zIndex: 1,
+									}}
+								>
+									<strong>Holiday Name</strong>
 								</TableCell>
-								<TableCell>
-									<Box
-										sx={{
-											display: "flex",
-											justifyContent: "center",
-											alignItems: "center",
-											// backgroundColor: "pink",
-										}}
-									>
-										<IconButton
-											sx={{ padding: 0 }}
-											onClick={() => {
-												setHolidayID(holiday._id);
-												handleClickOpen();
-												setIsEditMode(true);
-												// console.log("Holiday ID:", holiday._id);
-											}}
-										>
-											<EditIcon color="primary" />
-										</IconButton>
-									</Box>
+								<TableCell
+									sx={{
+										backgroundColor: "#f5f5f5",
+										position: "sticky",
+										top: 0,
+										zIndex: 1,
+									}}
+								>
+									<strong>Date</strong>
+								</TableCell>
+								<TableCell
+									sx={{
+										backgroundColor: "#f5f5f5",
+										position: "sticky",
+										top: 0,
+										zIndex: 1,
+										display: "flex",
+										justifyContent: "center",
+										alignItems: "center",
+									}}
+								>
+									<strong>Actions</strong>
 								</TableCell>
 							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-		</Box>
+						</TableHead>
+						<TableBody>
+							{allHolidayData?.map((holiday, index) => (
+								<TableRow key={index}>
+									<TableCell>{holiday.holidayName}</TableCell>
+									<TableCell>
+										{new Date(holiday.holidayDate).toLocaleDateString("en-IN")}
+									</TableCell>
+									<TableCell>
+										<Box
+											sx={{
+												display: "flex",
+												justifyContent: "center",
+												alignItems: "center",
+											}}
+										>
+											<IconButton
+												sx={{ padding: 0 }}
+												onClick={() => {
+													setSelectedHolidayData(holiday);
+													setHolidayID(holiday._id);
+													handleClickOpen();
+													setIsEditMode(true);
+												}}
+											>
+												<EditIcon color="primary" />
+											</IconButton>
+										</Box>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</TableContainer>
+			</Box>
+		</>
 	);
 };
 

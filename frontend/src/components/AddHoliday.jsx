@@ -27,32 +27,16 @@ const validationSchema = Yup.object().shape({
 const BASE_API = process.env.BASE_URL || "http://localhost:5000/api/v1";
 export default function AddHoliday({
 	setReload,
+	selectedHolidayData,
 	holidayID,
 	handleClose,
 	open,
+	setAlertOpen,
+	setAlertStatus,
 }) {
-	//
 	const theme = useTheme();
 	const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-	const [holidayData, setHolidayData] = React.useState({});
-	const fetchHolidayData = async () => {
-		try {
-			const response = await axios.get(`${BASE_API}/holidays/${holidayID}`);
-			console.log("Resp Data:", response.data);
 
-			const data = response.data.holiday; // ✅ Get actual data
-			setHolidayData(data);
-			console.log("Holiday Data:", data);
-		} catch (error) {
-			console.error("Error fetching holiday data:", error);
-		}
-	};
-	React.useEffect(() => {
-		if (open && holidayID) {
-			fetchHolidayData();
-			console.log(holidayID);
-		}
-	}, [open]);
 	const addHoliday = async (values, { resetForm }) => {
 		try {
 			const res = await axios.post(`${BASE_API}/holidays`, {
@@ -62,8 +46,18 @@ export default function AddHoliday({
 			handleClose();
 			resetForm();
 			setReload((prev) => !prev);
+			setAlertStatus({
+				type: "success",
+				message: "Holiday added successfully!",
+			});
+			setAlertOpen(true);
 			console.log("✅ Success:", res.data);
 		} catch (err) {
+			setAlertStatus({
+				type: "error",
+				message: "Failed to add holiday. Please try again.",
+			});
+			setAlertOpen(true);
 			console.error("❌ Axios failed:", err.response?.data || err.message);
 		}
 	};
@@ -75,9 +69,19 @@ export default function AddHoliday({
 			});
 			handleClose();
 			setReload((prev) => !prev);
+			setAlertOpen(true);
+			setAlertStatus({
+				type: "success",
+				message: "Holiday updated successfully!",
+			});
 			resetForm();
 			console.log("✅ Success:", res.data);
 		} catch (err) {
+			setAlertOpen(true);
+			setAlertStatus({
+				type: "error",
+				message: "Failed to update holiday. Please try again.",
+			});
 			console.error("❌ Axios failed:", err.response?.data || err.message);
 		}
 	};
@@ -97,12 +101,15 @@ export default function AddHoliday({
 					<Formik
 						initialValues={{
 							holidayDate:
-								holidayID && !isNaN(new Date(holidayData.holidayDate))
-									? new Date(holidayData.holidayDate)
+								selectedHolidayData &&
+								!isNaN(new Date(selectedHolidayData.holidayDate))
+									? new Date(selectedHolidayData.holidayDate)
 											.toISOString()
 											.split("T")[0]
 									: "",
-							holidayName: holidayID ? holidayData.holidayName : "",
+							holidayName: selectedHolidayData
+								? selectedHolidayData.holidayName
+								: "",
 						}}
 						validationSchema={validationSchema}
 						onSubmit={holidayID ? editHoliday : addHoliday}
@@ -158,9 +165,6 @@ export default function AddHoliday({
 											Submit
 										</Button>
 									</Box>
-									{/* <Button type="submit" variant="contained" color="primary">
-                                                            Submit
-                                                        </Button> */}
 								</Form>
 							);
 						}}
