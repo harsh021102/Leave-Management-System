@@ -14,6 +14,7 @@ const TopHeader = () => {
 			sx={{
 				backgroundColor: "primary.main",
 				borderRadius: 0,
+				width: "100%",
 			}}
 		>
 			<Box className="image-menu-container">

@@ -18,7 +18,13 @@ export default function CustomAlert({ alertOpen, setAlertOpen, status }) {
 			{/* <Button onClick={handleClick} sx={{ background: "Red" }}>
 				Open Snackbar
 			</Button> */}
-			<Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleClose}>
+			<Snackbar
+				open={alertOpen}
+				autoHideDuration={6000}
+				onClose={handleClose}
+				anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+				key={"topleft"}
+			>
 				<Alert
 					onClose={handleClose}
 					severity={status.type}

@@ -9,7 +9,8 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import "../styles/LeftNav.css"; // Assuming you have a CSS file for styles
 import { useMain } from "../context/MainContext"; // Adjust the import path as necessary
 import { useNavigate } from "react-router";
-const drawerWidth = 200;
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+// const drawerWidth = 200;
 const drawerMenuItems = [
 	{
 		id: 1,
@@ -21,8 +22,13 @@ const drawerMenuItems = [
 		label: "Holidays",
 		icon: <CalendarMonthIcon className="nav-icon" />,
 	},
+
 	{ id: 3, label: "Approvals", icon: <ApprovalIcon className="nav-icon" /> },
-	{ id: 4, label: "Settings", icon: <SettingsIcon className="nav-icon" /> },
+	{
+		id: 4,
+		label: "Admin",
+		icon: <AdminPanelSettingsIcon className="nav-icon" />,
+	},
 ];
 const LeftNav = () => {
 	const navigate = useNavigate();
@@ -33,49 +39,51 @@ const LeftNav = () => {
 			square={false}
 			className="left-nav-wrapper"
 			sx={{
-				width: openDrawer ? drawerWidth : 0,
-				display: openDrawer ? "block" : "none",
+				width: openDrawer ? 200 : 0,
+				display: openDrawer ? "flex" : "none",
 				transition: "display 0.3s ease",
 				borderRadius: 0,
 				boxShadow: 3,
 			}}
 		>
 			<List className="left-nav-container">
-				{drawerMenuItems.map((item) => (
-					<ListItem
-						button
-						key={item.id}
-						className="nav-item"
-						sx={{
-							backgroundColor:
-								currScr === item.label ? "primary.main" : "background.white",
-							color:
-								currScr === item.label ? "background.white" : "primary.main",
-							"&:hover": {
-								backgroundColor: "primary.light",
-								color: "background.white",
-							},
-						}}
-						onClick={() => {
-							if (item.label === "Dashboard") {
-								navigate("/");
-								setCurrScr("Dashboard");
-							} else if (item.label === "Holidays") {
-								navigate("/holidays");
-								setCurrScr("Holidays");
-							} else if (item.label === "Approvals") {
-								navigate("/approvals");
-								setCurrScr("Approvals");
-							} else if (item.label === "Settings") {
-								navigate("/settings");
-								setCurrScr("Settings");
-							}
-						}}
-					>
-						{item.icon}
-						<span sx={{ color: "primary.main" }}>{item.label}</span>
-					</ListItem>
-				))}
+				{drawerMenuItems.map((item) => {
+					return (
+						<ListItem
+							// button
+							key={item.id}
+							className="nav-item"
+							sx={{
+								backgroundColor:
+									currScr === item.label ? "primary.main" : "background.white",
+								color:
+									currScr === item.label ? "background.white" : "primary.main",
+								"&:hover": {
+									backgroundColor: "primary.light",
+									color: "background.white",
+								},
+							}}
+							onClick={() => {
+								if (item.label === "Dashboard") {
+									navigate("/");
+									setCurrScr("Dashboard");
+								} else if (item.label === "Holidays") {
+									navigate("/holidays");
+									setCurrScr("Holidays");
+								} else if (item.label === "Approvals") {
+									navigate("/approvals");
+									setCurrScr("Approvals");
+								} else if (item.label === "Admin") {
+									navigate("/admin");
+									setCurrScr("Admin");
+								}
+							}}
+						>
+							{item.icon}
+							<span sx={{ color: "primary.main" }}>{item.label}</span>
+						</ListItem>
+					);
+				})}
 			</List>
 		</Paper>
 	);

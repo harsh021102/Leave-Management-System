@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const leaveSchema = new mongoose.Schema({
-    // name: String
     startDate:  {
         type: Date,
         required: true
@@ -25,6 +24,20 @@ const leaveSchema = new mongoose.Schema({
         required: true,
         minlength: 1
     },
+    userEmail: {
+        type: String,
+        required: true,
+        match: /.+\@.+\..+/
+    },
+    leaveStatus: {
+        type: String,   
+        enum: ["Pending", "Approved", "Rejected"],
+        default: "Pending"
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 module.exports = mongoose.model('Leave', leaveSchema);

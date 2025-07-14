@@ -17,28 +17,14 @@ import {
 	Button,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import AddHoliday from "../components/AddHoliday";
 import { useEffect } from "react";
 import axios from "axios";
-import HolidayDataUpdate from "../components/AddHoliday";
-import EditHoliday from "../components/EditHoliday";
 import CustomAlert from "../components/CustomAlert";
-// require("dotenv").config();
-// const holidayData = {
-// 	2023: [
-// 		{ name: "New Year", date: "2023-01-01", type: "Public Holiday" },
-// 		{ name: "Diwali", date: "2023-11-12", type: "Festival" },
-// 	],
-// 	2024: [
-// 		{ name: "Republic Day", date: "2024-01-26", type: "Public Holiday" },
-// 		{ name: "Holi", date: "2024-03-25", type: "Festival" },
-// 	],
-// 	2025: Array(15).fill({
-// 		name: "Christmas",
-// 		date: "2025-12-25",
-// 		type: "Festival",
-// 	}),
-// };
+import DeleteDialog from "../components/DeleteDialog";
+import { useMain } from "../context/MainContext";
+
 const currentYear = new Date().getFullYear();
 const years = Array.from({ length: 11 }, (_, i) =>
 	(currentYear - 5 + i).toString()
@@ -54,7 +40,12 @@ const HolidayTable = () => {
 	const [reload, setReload] = useState(false);
 	const [open, setOpen] = React.useState(false);
 	const [alertOpen, setAlertOpen] = useState(false);
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 	const [alertStatus, setAlertStatus] = useState(null);
+	const { setCurrScr } = useMain();
+	useEffect(() => {
+		setCurrScr("Holidays");
+	}, []);
 	const handleYearChange = (event) => {
 		setSelectedYear(event.target.value);
 	};
@@ -65,7 +56,9 @@ const HolidayTable = () => {
 	const handleClose = () => {
 		setOpen(false);
 	};
-
+	const handleDeleteClose = () => {
+		setOpenDeleteDialog(false);
+	};
 	const fetchAllHolidayData = async () => {
 		try {
 			const response = await axios.get(`${BASE_API}/holidays`);
@@ -91,6 +84,16 @@ const HolidayTable = () => {
 					setAlertOpen={setAlertOpen}
 				/>
 			)}
+			<DeleteDialog
+				openDeleteDialog={openDeleteDialog}
+				setOpenDeleteDialog={setOpenDeleteDialog}
+				handleDeleteClose={handleDeleteClose}
+				setReload={setReload}
+				holidayID={holidayID}
+				type={"holiday"}
+				setAlertOpen={setAlertOpen}
+				setAlertStatus={setAlertStatus}
+			/>
 			<Box
 				style={{
 					padding: 20,
@@ -174,36 +177,37 @@ const HolidayTable = () => {
 							<TableRow>
 								<TableCell
 									sx={{
-										backgroundColor: "#f5f5f5",
 										position: "sticky",
 										top: 0,
 										zIndex: 1,
+										backgroundColor: "primary.main",
+										color: "white",
 									}}
 								>
 									<strong>Holiday Name</strong>
 								</TableCell>
 								<TableCell
 									sx={{
-										backgroundColor: "#f5f5f5",
 										position: "sticky",
 										top: 0,
 										zIndex: 1,
+										backgroundColor: "primary.main",
+										color: "white",
 									}}
 								>
 									<strong>Date</strong>
 								</TableCell>
 								<TableCell
 									sx={{
-										backgroundColor: "#f5f5f5",
 										position: "sticky",
 										top: 0,
 										zIndex: 1,
-										display: "flex",
-										justifyContent: "center",
-										alignItems: "center",
+
+										backgroundColor: "primary.main",
+										color: "white",
 									}}
 								>
-									<strong>Actions</strong>
+									<strong sx={{ backgroundColor: "pink" }}>Actions</strong>
 								</TableCell>
 							</TableRow>
 						</TableHead>
@@ -218,8 +222,9 @@ const HolidayTable = () => {
 										<Box
 											sx={{
 												display: "flex",
-												justifyContent: "center",
+												justifyContent: "start",
 												alignItems: "center",
+												gap: 3,
 											}}
 										>
 											<IconButton
@@ -232,6 +237,18 @@ const HolidayTable = () => {
 												}}
 											>
 												<EditIcon color="primary" />
+											</IconButton>
+											<IconButton
+												sx={{ padding: 0 }}
+												onClick={() => {
+													// setSelectedHolidayData(holiday);
+													setOpenDeleteDialog(true);
+													setHolidayID(holiday._id);
+													// handleClickOpen();
+													// setIsEditMode(true);
+												}}
+											>
+												<DeleteIcon color="primary" />
 											</IconButton>
 										</Box>
 									</TableCell>

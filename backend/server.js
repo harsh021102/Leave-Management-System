@@ -4,6 +4,7 @@ require("./db/connect");
 const cors = require("cors");
 const leaves = require("./routes/leaves");
 const holidays = require("./routes/holidays");
+const employees = require("./routes/employee");
 const app = express();
 const connectDB = require("./db/connect");
 require("dotenv").config();
@@ -15,7 +16,7 @@ app.use(express.json());
 
 app.use('/api/v1/leaves', leaves);
 app.use('/api/v1/holidays', holidays);
-
+app.use('/api/v1/employees', employees);
 const start = async () => {
   try {
     await connectDB(process.env.MONGO_URI);

@@ -123,7 +123,6 @@ export default function AddHoliday({
 										value={values.holidayName}
 										onChange={handleChange}
 										name="holidayName"
-										// InputProps={{ readOnly: true }}
 										margin="normal"
 										required
 										error={touched.holidayDate && Boolean(errors.holidayDate)}
@@ -146,7 +145,6 @@ export default function AddHoliday({
 									<Box sx={{ display: "flex", gap: 1 }}>
 										<Button
 											fullWidth
-											// type="submit"
 											variant="contained"
 											color="background.default"
 											sx={{ mt: 2, boxShadow: 4 }}

@@ -1,15 +1,6 @@
 const mongoose = require('mongoose');
 
 const holidaySchema = new mongoose.Schema({
-    id: {
-        type: String,
-        required: true,
-        unique: true,
-        default: function () {
-            return `L-${Date.now()}`;
-        },
-    },
-    // name: String
     holidayDate:  {
         type: Date,
         required: true

@@ -1,4 +1,5 @@
 // theme.js
+import { yellow } from '@mui/material/colors';
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
@@ -42,7 +43,10 @@ const theme = createTheme({
     },
     selected:{
         row:'#ede7f6'
-    }
+    },
+    pending:{
+        lightyellow:'#f0fca8ff'
+    },
   },
 });
 export default theme;

@@ -30,7 +30,7 @@ const validationSchema = Yup.object().shape({
 	leaveType: Yup.string().required("Leave type is required"),
 	reason: Yup.string().required("Reason is required"),
 });
-
+const BASE_API = process.env.BASE_URL || "http://localhost:5000/api/v1";
 const LeaveDrawerForm = () => {
 	const { applyLeaveMenu, setApplyLeaveMenu } = useMain();
 	const toggleDrawer = (state) => () => {
@@ -71,16 +71,14 @@ const LeaveDrawerForm = () => {
 							numOfDays,
 						});
 						try {
-							const res = await axios.post(
-								"http://localhost:5000/api/v1/leaves",
-								{
-									startDate: values.startDate,
-									endDate: values.endDate,
-									leaveType: values.leaveType,
-									reason: values.reason,
-									numOfDays: numOfDays,
-								}
-							);
+							const res = await axios.post(`${BASE_API}/leaves`, {
+								startDate: values.startDate,
+								endDate: values.endDate,
+								leaveType: values.leaveType,
+								reason: values.reason,
+								numOfDays: numOfDays,
+								userEmail: "harsh021102@gmail.com",
+							});
 							toggleDrawer();
 							resetForm();
 							console.log("✅ Success:", res.data);
@@ -90,21 +88,6 @@ const LeaveDrawerForm = () => {
 								err.response?.data || err.message
 							);
 						}
-						// try {
-						// 	const response = await axios.post(
-						// 		"http://localhost:5000/api/v1/leaves",
-						// 		{
-						// 			...values,
-						// 			numOfDays,
-						// 		}
-						// 	);
-						// 	console.log("Leave created:", response.data);
-						// 	resetForm();
-						// 	alert("Leave request submitted successfully");
-						// } catch (error) {
-						// 	console.error("Error submitting leave request:", error);
-						// 	alert("Failed to submit leave request");
-						// }
 					}}
 				>
 					{({ values, errors, touched, handleChange }) => {

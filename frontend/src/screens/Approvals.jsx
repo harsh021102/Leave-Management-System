@@ -96,6 +96,10 @@ const headCells = [
 ];
 
 function EnhancedTableHead(props) {
+	const { setCurrScr } = useMain();
+	React.useEffect(() => {
+		setCurrScr("Approvals");
+	}, []);
 	const {
 		onSelectAllClick,
 		order,
